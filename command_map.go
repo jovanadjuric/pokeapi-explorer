@@ -1,49 +1,40 @@
 package main
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
-	"strconv"
 )
 
-type pokeApiResponse struct {
-	Next     string
-	Previous string
-	Results  []pokeApiLocation
-	Count    int
-}
-
-type pokeApiLocation struct {
-	Name string
-	Url  string
-}
-
-var page int = 0
-
-func commandMap() error {
-	limit := 20
-	offset := 20 * page
-
-	res, err := http.Get("https://pokeapi.co/api/v2/location-area" + "?limit=" + strconv.Itoa(limit) + "&offset=" + strconv.Itoa(offset))
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	page++
-
-	decoder := json.NewDecoder(res.Body)
-	var formattedResponse pokeApiResponse
-
-	err = decoder.Decode(&formattedResponse)
+func commandMapf(cfg *config) error {
+	locationsResp, err := cfg.pokeApiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
 		return err
 	}
 
-	for _, v := range formattedResponse.Results {
-		fmt.Println(v.Name)
+	cfg.nextLocationsURL = locationsResp.Next
+	cfg.prevLocationsURL = locationsResp.Previous
+
+	for _, loc := range locationsResp.Results {
+		fmt.Println(loc.Name)
+	}
+	return nil
+}
+
+func commandMapb(cfg *config) error {
+	if cfg.prevLocationsURL == nil {
+		return errors.New("you're on the first page")
 	}
 
+	locationResp, err := cfg.pokeApiClient.ListLocations(cfg.prevLocationsURL)
+	if err != nil {
+		return err
+	}
+
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.prevLocationsURL = locationResp.Previous
+
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
+	}
 	return nil
 }

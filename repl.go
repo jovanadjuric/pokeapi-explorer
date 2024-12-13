@@ -5,15 +5,23 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	pokeApi "github.com/jovanadjuric/pokedex/internal/pokeApi"
 )
 
 type cliCommand struct {
-	callback    func() error
+	callback    func(*config) error
 	name        string
 	description string
 }
 
-func startRepl() {
+type config struct {
+	pokeApiClient    pokeApi.Client
+	nextLocationsURL *string
+	prevLocationsURL *string
+}
+
+func startRepl(cfg *config) {
 	commands := getCommands()
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -28,7 +36,7 @@ func startRepl() {
 			for _, command := range commands {
 				if command.name == sanitized[0] {
 					found = true
-					command.callback()
+					command.callback(cfg)
 					break
 				}
 			}
@@ -68,8 +76,13 @@ func getCommands() map[string]cliCommand {
 		},
 		"map": {
 			name:        "map",
-			description: "Display the map",
-			callback:    commandMap,
+			description: "Get the next page of locations",
+			callback:    commandMapf,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Get the previous page of locations",
+			callback:    commandMapb,
 		},
 	}
 }
