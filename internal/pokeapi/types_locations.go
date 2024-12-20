@@ -1,4 +1,4 @@
-package pokeapi
+package pokeApi
 
 // RespShallowLocations -
 type RespShallowLocations struct {
