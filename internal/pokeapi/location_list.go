@@ -1,4 +1,4 @@
-package pokeApi
+package pokeapi
 
 import (
 	"encoding/json"

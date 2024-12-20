@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	pokeApi "github.com/jovanadjuric/pokedex/internal/pokeApi"
+	pokeapi "github.com/jovanadjuric/pokedex/internal/pokeapi"
 )
 
 type cliCommand struct {
@@ -16,9 +16,9 @@ type cliCommand struct {
 }
 
 type config struct {
-	pokeApiClient    pokeApi.Client
 	nextLocationsURL *string
 	prevLocationsURL *string
+	pokeapiClient    pokeapi.Client
 }
 
 func startRepl(cfg *config) {

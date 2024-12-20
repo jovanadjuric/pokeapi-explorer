@@ -3,14 +3,14 @@ package main
 import (
 	"time"
 
-	pokeApi "github.com/jovanadjuric/pokedex/internal/pokeApi"
+	pokeapi "github.com/jovanadjuric/pokedex/internal/pokeapi"
 )
 
 func main() {
-	pokeClient := pokeApi.NewClient(5 * time.Second)
+	pokeClient := pokeapi.NewClient(5 * time.Second)
 
 	cfg := &config{
-		pokeApiClient: pokeClient,
+		pokeapiClient: pokeClient,
 	}
 
 	startRepl(cfg)
