@@ -10,7 +10,7 @@ import (
 )
 
 type cliCommand struct {
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 	name        string
 	description string
 }
@@ -26,24 +26,42 @@ func startRepl(cfg *config) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
+	executed := false
 	for {
 		fmt.Print("Pokedex > ")
-		if scanner.Scan() {
-			text := scanner.Text()
-			sanitized := strings.Fields(strings.ToLower(text))
+		if !scanner.Scan() && executed {
+			break
+		}
 
-			found := false
-			for _, command := range commands {
-				if command.name == sanitized[0] {
-					found = true
-					command.callback(cfg)
+		executed = true
+
+		text := scanner.Text()
+		sanitized := strings.Fields(strings.ToLower(text))
+
+		if len(sanitized) == 0 {
+			executed = false
+			continue
+		}
+
+		found := false
+		for _, command := range commands {
+			if command.name == sanitized[0] {
+				found = true
+				if len(sanitized) > 1 {
+					command.callback(cfg, sanitized[1:]...)
 					break
 				}
-			}
 
-			if !found {
-				fmt.Println("Unknown command")
+				err := command.callback(cfg)
+				if err != nil {
+					fmt.Println(err)
+				}
+				break
 			}
+		}
+
+		if !found {
+			fmt.Println("Unknown command")
 		}
 	}
 }
@@ -83,6 +101,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Get the previous page of locations",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Explore a location",
+			callback:    commandExplore,
 		},
 	}
 }
