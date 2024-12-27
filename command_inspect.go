@@ -19,7 +19,7 @@ func commandInspect(cfg *config, params ...string) error {
 		return nil
 	}
 
-	fmt.Printf("Name: %d\n", pokemon.Name)
+	fmt.Printf("Name: %v\n", *pokemon.Name)
 	fmt.Printf("Height: %d\n", pokemon.Height)
 	fmt.Printf("Weight: %d\n", pokemon.Weight)
 	fmt.Printf("Stats:\n")
