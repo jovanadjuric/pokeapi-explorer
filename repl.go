@@ -18,6 +18,7 @@ type cliCommand struct {
 type config struct {
 	nextLocationsURL *string
 	prevLocationsURL *string
+	pokemons         map[string]pokeapi.Pokemon
 	pokeapiClient    pokeapi.Client
 }
 
@@ -44,8 +45,8 @@ func startRepl(cfg *config) {
 		}
 
 		found := false
-		for _, command := range commands {
-			if command.name == sanitized[0] {
+		for k, command := range commands {
+			if k == sanitized[0] {
 				found = true
 				if len(sanitized) > 1 {
 					command.callback(cfg, sanitized[1:]...)
@@ -106,6 +107,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore <location_name>",
 			description: "Explore a location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch <location_name>",
+			description: "Catch a pokemon",
+			callback:    commandCatch,
 		},
 	}
 }
