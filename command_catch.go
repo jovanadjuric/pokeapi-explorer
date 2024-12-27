@@ -20,8 +20,6 @@ func commandCatch(cfg *config, params ...string) error {
 		return err
 	}
 
-	fmt.Println(cfg.pokemons)
-
 	randomNumber := rand.Intn(300)
 	isCaught := randomNumber < pokemon.BaseExperience
 
